@@ -5,15 +5,15 @@ import markdown
 import datetime
 from bs4 import BeautifulSoup
 
-# Cấu hình logger
+# Configure logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-# Kết nối tới các dịch vụ AWS
+# Connect to AWS services
 kendra_client = boto3.client('kendra', region_name='ap-southeast-1')
 kendra_index_id = '1c088278-9865-482f-a9bd-02403d6e9fd0'
 
-# Sử dụng bedrock-runtime với Claude 3.5 Sonnet
+# Use bedrock-runtime with Claude 3.5 Sonnet
 bedrock_runtime_client = boto3.client('bedrock-runtime', region_name='ap-southeast-1')
 bedrock_model_id = 'anthropic.claude-3-5-sonnet-20240620-v1:0'
 
@@ -69,7 +69,7 @@ def lambda_handler(event, context):
             
             logger.info(f"Built context from previous conversations: {context[:100]}...")
 
-        # 1. Truy vấn Kendra để tìm kiếm câu trả lời
+        #1. Query Kendra for answers
         response = kendra_client.query(
             IndexId=kendra_index_id,
             QueryText=question,
@@ -84,12 +84,12 @@ def lambda_handler(event, context):
             }
         )
         
-        # Kiểm tra nếu có kết quả từ Kendra
+        # Check if there are results from Kendra
         if 'ResultItems' in response and len(response['ResultItems']) > 0:
             result_item = response['ResultItems'][0]
             answer = result_item.get('DocumentExcerpt', {}).get('Text', 'No answer found.')
 
-            # Xử lý Markdown nếu có trong câu trả lời từ Kendra
+            # Process Markdown if present in answer from Kendra
             if answer:
                 html_content = markdown.markdown(answer)
                 soup = BeautifulSoup(html_content, 'html.parser')
@@ -97,7 +97,7 @@ def lambda_handler(event, context):
                 
             source = "kendra"
         else:
-            # Nếu không có kết quả từ Kendra, gọi Claude 3.5 Sonnet
+            # If there's no result from Kendra, call Claude 3.5 Sonnet
             logger.info("No results from Kendra, calling Claude 3.5 Sonnet...")
             
             # Include context from previous conversations if available
@@ -105,7 +105,7 @@ def lambda_handler(event, context):
             if context:
                 prompt = f"{context}\n\nNew Question: {question}\n\nPlease respond to the new question using the context of our previous conversation when relevant."
             
-            # Cấu hình yêu cầu cho Claude 3.5 Sonnet
+            # Config requirements Claude 3.5 Sonnet
             request_body = {
                 "anthropic_version": "bedrock-2023-05-31",
                 "max_tokens": 1000,
@@ -122,7 +122,7 @@ def lambda_handler(event, context):
                 ]
             }
 
-            # Gửi yêu cầu đến Claude 3.5 Sonnet API
+            # Send request to Claude 3.5 Sonnet API
             response = bedrock_runtime_client.invoke_model(
                 modelId=bedrock_model_id,
                 contentType="application/json",
@@ -130,7 +130,7 @@ def lambda_handler(event, context):
                 body=json.dumps(request_body)
             )
 
-            # Kiểm tra và xử lý kết quả từ Claude 3.5 Sonnet
+            # Check and process result from Claude 3.5 Sonnet
             if response and 'body' in response:
                 response_body = response['body'].read().decode('utf-8')
                 logger.info(f"Raw Claude response: {response_body}")
@@ -164,7 +164,7 @@ def lambda_handler(event, context):
                 Payload=json.dumps(payload)
             )
 
-        # Trả về kết quả với CORS headers
+        # Return result with CORS headers
         return {
             'statusCode': 200,
             'headers': {
