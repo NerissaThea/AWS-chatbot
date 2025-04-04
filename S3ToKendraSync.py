@@ -5,11 +5,12 @@ import markdown
 from bs4 import BeautifulSoup
 import os
 
-# Cấu hình logger
+# Configure logger
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-# Kết nối tới các dịch vụ AWS
+# Connect to AWS services
 s3 = boto3.client('s3')
 kendra = boto3.client('kendra', region_name='ap-southeast-1')
 
@@ -24,15 +25,15 @@ def lambda_handler(event, context):
     try:
         logger.info(f"Received event: {json.dumps(event)}")
 
-        # Lấy thông tin bucket và file name từ event S3
+        # Get bucket information and file name from S3 event
         bucket_name = event['Records'][0]['s3']['bucket']['name']
         file_name = event['Records'][0]['s3']['object']['key']
         
-        # Download file markdown từ S3
+        # Download markdown files from S3
         md_file = s3.get_object(Bucket=bucket_name, Key=file_name)
         md_content = md_file['Body'].read().decode('utf-8')
         
-        # Chuyển đổi Markdown sang HTML
+        # Convert Markdown to HTML
         html_content = markdown.markdown(md_content)
         
         # Create HTML document for Kendra
@@ -43,13 +44,13 @@ def lambda_handler(event, context):
             'ContentType': 'HTML',  # Chúng ta sẽ sử dụng HTML
         }
 
-        # Gửi tài liệu đến Kendra
+        # send docutments to Kendra
         response = kendra.BatchPutDocuments(
             IndexId=kendra_index_id,
             Documents=[document]
         )
 
-        # Đảm bảo tài liệu được xử lý thành công
+        # Ensure documents are processed successfully
         if 'FailedDocuments' in response and response['FailedDocuments']:
             logger.error(f"Failed to upload documents to Kendra: {response['FailedDocuments']}")
             raise Exception(f"Failed to upload documents to Kendra: {response['FailedDocuments']}")
