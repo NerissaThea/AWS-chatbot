@@ -63,7 +63,7 @@ Zip the contents of the `python` directory to create a deployment package:
 cd python
 zip -r ../lambda-deployment-package.zip .
 ```
-
+or compress the file manually
 This will create a file called `lambda-deployment-package.zip`.
 
 ### 4. Upload the ZIP to AWS Lambda
@@ -85,8 +85,3 @@ Use the AWS Lambda **Test** functionality or invoke the Lambda function using AP
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
-
----
-
-Đây là file `README.md` hoàn chỉnh mà bạn có thể sử dụng cho dự án của mình. Nếu bạn có thêm yêu cầu hoặc chỉnh sửa nào, đừng ngần ngại yêu cầu!
