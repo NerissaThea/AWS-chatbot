@@ -1,64 +1,3 @@
-# AWS-chatbot
-Lambda code for AWS Chatbot
-Ah, I see! You would like to bundle the dependencies along with the Python files, zip them, and upload them to AWS Lambda. Here’s the step-by-step guide on how to achieve this.
-
-### Step-by-Step Guide for Deploying the Lambda Function with Dependencies
-
-1. **Install the Dependencies Locally**  
-   First, we need to install the necessary libraries into a local directory. This will ensure that the Lambda function can include these dependencies.
-
-   ```bash
-   mkdir python
-   pip install -r requirements.txt -t ./python
-   ```
-
-   The `requirements.txt` file should contain the following dependencies (this file will be created in the project folder):
-
-   ```
-   requests==2.32.3
-   beautifulsoup4==4.13.3
-   markdown==3.7
-   boto3==1.26.11
-   ```
-
-2. **Include Your Python Files**  
-   Next, add your Python files (the Lambda function files) to the `python` directory.
-
-   For example:
-   - `lambda_function.py` from **SENDTOTELEGRAM** should go inside the `python` directory.
-   - Similarly, copy the `lambda_function.py` file from **GETCHATBOTRESPONSE** to the `python` directory.
-
-3. **Zip the Contents**  
-   After adding the Python files and the dependencies into the `python` folder, zip the contents of the folder to create a deployment package. Make sure you are zipping the contents of the `python` folder, not the folder itself.
-
-   ```bash
-   cd python
-   zip -r ../lambda-deployment-package.zip .
-   ```
-
-   This will create a `lambda-deployment-package.zip` file.
-
-4. **Upload the ZIP to Lambda**  
-   - Go to the **AWS Lambda Console**.
-   - Click on **Create Function** or select an existing function.
-   - Under the **Function code** section, choose **Upload a .zip file** from the dropdown.
-   - Upload the `lambda-deployment-package.zip` file.
-
-5. **Set Up the Handler and Environment Variables**  
-   - In the **Handler** field, you should set the correct handler for your Lambda function. For example:
-     - For `sendToTelegram.py`, set the handler to: `lambda_function.lambda_handler`.
-     - For `getChatbotResponse.py`, set the handler to: `lambda_function.lambda_handler`.
-   
-   - Set up any necessary environment variables (e.g., API keys, URLs) in the **Environment variables** section of the Lambda configuration.
-
-6. **Test the Function**  
-   Once the Lambda function is deployed, you can test it using AWS Lambda's **Test** functionality by creating a test event or invoking the function through an API Gateway.
-
----
-
-### Complete `README.md` with the Instructions
-
-```markdown
 # Chatbot Integration Project - Lambda Deployment
 
 This repository contains AWS Lambda functions to process chatbot responses and send them to Telegram. The project requires several Python libraries that need to be packaged together with the Lambda function before deployment.
@@ -150,4 +89,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-This should guide you through installing dependencies, packaging your Lambda function, and deploying it to AWS. Let me know if you need further assistance!
+Đây là file `README.md` hoàn chỉnh mà bạn có thể sử dụng cho dự án của mình. Nếu bạn có thêm yêu cầu hoặc chỉnh sửa nào, đừng ngần ngại yêu cầu!
