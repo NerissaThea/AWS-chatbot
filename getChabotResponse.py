@@ -46,12 +46,12 @@ def lambda_handler(event, context):
             except:
                 pass
         # Format 3: From AppSync arguments format
-        elif isinstance(event, dict) and 'arguments' in event:
-            question = event['arguments'].get('question')
-            session_id = event['arguments'].get('session_id', session_id)
+        #elif isinstance(event, dict) and 'arguments' in event:
+            #question = event['arguments'].get('question')
+            #session_id = event['arguments'].get('session_id', session_id)
 
-        logger.info(f"Extracted question: {question}")
-        logger.info(f"Using session_id: {session_id}")
+        #logger.info(f"Extracted question: {question}")
+        #logger.info(f"Using session_id: {session_id}")
         
         if not question:
             raise ValueError("Could not find 'question' in the request")
@@ -229,28 +229,3 @@ def get_previous_conversations(session_id, limit=3):
     except Exception as e:
         logger.error(f"Error retrieving conversations from DynamoDB: {str(e)}")
         return []
-
-def extract_user_name(question):
-    """
-    Extract user name from the question (e.g., "Call me Nhi")
-    """
-    if "call me" in question.lower():
-        name = question.lower().replace("call me", "").strip()
-        return name
-    return None
-
-def get_user_name(session_id):
-    """
-    Retrieve user name from DynamoDB for a session.
-    """
-    try:
-        response = conversation_table.query(
-            KeyConditionExpression=boto3.dynamodb.conditions.Key('session_id').eq(session_id),
-            Limit=1  # Only retrieve the most recent conversation
-        )
-        if 'Items' in response and response['Items']:
-            return response['Items'][0].get('answer', None)
-        return None
-    except Exception as e:
-        logger.error(f"Error retrieving user name from DynamoDB: {str(e)}")
-        return None
