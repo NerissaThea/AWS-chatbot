@@ -46,12 +46,12 @@ def lambda_handler(event, context):
             except:
                 pass
         # Format 3: From AppSync arguments format
-        #elif isinstance(event, dict) and 'arguments' in event:
-            #question = event['arguments'].get('question')
-            #session_id = event['arguments'].get('session_id', session_id)
+        elif isinstance(event, dict) and 'arguments' in event:
+            question = event['arguments'].get('question')
+            session_id = event['arguments'].get('session_id', session_id)
 
-        #logger.info(f"Extracted question: {question}")
-        #logger.info(f"Using session_id: {session_id}")
+        logger.info(f"Extracted question: {question}")
+        logger.info(f"Using session_id: {session_id}")
         
         if not question:
             raise ValueError("Could not find 'question' in the request")
